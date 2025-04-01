@@ -32,9 +32,10 @@ class Arena:
             cluster_size = fly.size / EXPECTED_FLY_AREA
             self.cluster_sizes.append(cluster_size)
             self.flies_counted += cluster_size
-    
-        self.average_cluster_size = statistics.mean(self.cluster_sizes)
-        self.median_cluster_size = statistics.median(self.cluster_sizes)
+
+        if len(self.cluster_sizes) > 0:
+            self.average_cluster_size = statistics.mean(self.cluster_sizes)
+            self.median_cluster_size = statistics.median(self.cluster_sizes)
 
         self.fly_count_error = EXPECTED_FLY_COUNT - self.flies_counted
         self.flies_moved = sum([fly.moved for fly in self.flies])
@@ -61,9 +62,12 @@ class Frame:
         self.flies_moved = sum([arena.flies_moved for arena in self.arenas])
         self.flies_moved_percentage = self.flies_moved / self.flies_counted if self.flies_counted > 0 else None
         self.contours_counted = sum([arena.contours_counted for arena in self.arenas])
-        self.average_cluster_size = statistics.mean([x for arena in self.arenas for x in arena.cluster_sizes])
-        self.median_cluster_size = statistics.median([x for arena in self.arenas for x in arena.cluster_sizes])
+        
+        cluster_sizes = [x for arena in self.arenas for x in arena.cluster_sizes]
 
+        if len(cluster_sizes) > 0:
+            self.average_cluster_size = statistics.mean(cluster_sizes)
+            self.median_cluster_size = statistics.median(cluster_sizes)
 class FlyEncoder(json.JSONEncoder):
     def default(self, o):
         return o.__dict__
